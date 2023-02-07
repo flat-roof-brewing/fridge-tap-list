@@ -17,8 +17,13 @@ impl<I: Write + WriteRead> GreenPAK<I> {
     }
 
     pub fn write_program(&mut self, data: &[u8; 256]) -> Result<(), <I as Write>::Error> {
-        for (idx, byte) in data.iter().enumerate() {
-            self.device.write(ADDR, &[idx as u8, *byte])?;
+        for (idx, chunk) in data.chunks(16).enumerate() {
+            let mut cmd = [0u8; 17];
+
+            cmd[0] = (idx * 16) as u8;
+            cmd[1..].copy_from_slice(chunk);
+
+            self.device.write(ADDR, &cmd)?;
         }
 
         Ok(())
