@@ -27,6 +27,7 @@ mod st7032;
 
 use core::fmt::Write;
 
+use alloc::string::String;
 use esp_println::println;
 use fugit::RateExtU32;
 
@@ -39,6 +40,23 @@ use greenpak::GreenPAK;
 use lm75::LM75;
 use shared_bus::BusManagerSimple;
 use st7032::ST7032;
+
+extern crate alloc;
+#[global_allocator]  // necessary for correct work of alloc on ESP chips
+static ALLOCATOR: esp_alloc::EspHeap = esp_alloc::EspHeap::empty();
+
+fn init_heap() {
+    const HEAP_SIZE: usize = 32 * 1024;
+
+    extern "C" {
+        static mut _heap_start: u32;
+    }
+
+    unsafe {
+        let heap_start = &_heap_start as *const _ as usize;
+        ALLOCATOR.init(heap_start as *mut u8, HEAP_SIZE);
+    }
+}
 
 macro_rules! log_error {
     ($value:expr, $message:expr) => {
@@ -67,6 +85,12 @@ fn select_lcd<I: embedded_hal::blocking::i2c::Write + embedded_hal::blocking::i2
 
 #[xtensa_lx_rt::entry]
 fn main() -> ! {
+    init_heap();
+
+    let mut test = String::from("Hello");
+    test += ", world!";
+    println!("{test}");
+
     let peripherals = Peripherals::take().unwrap();
     let mut system = peripherals.DPORT.split();
     let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
