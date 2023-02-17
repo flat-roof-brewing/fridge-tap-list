@@ -23,7 +23,6 @@ const GREENPAK_DATA: [u8; 256] = [
 
 mod greenpak;
 mod lm75;
-mod st7032;
 
 use core::fmt::Write;
 
@@ -38,7 +37,7 @@ use esp_backtrace as _;
 use greenpak::GreenPAK;
 use lm75::LM75;
 use shared_bus::BusManagerSimple;
-use st7032::ST7032;
+use st7032i::ST7032i;
 
 macro_rules! log_error {
     ($value:expr, $message:expr) => {
@@ -100,7 +99,7 @@ fn main() -> ! {
 
     let mut delay = Delay::new(&clocks);
     let mut sensor = LM75::new(i2c.acquire_i2c());
-    let mut lcd = ST7032::new(i2c.acquire_i2c());
+    let mut lcd = ST7032i::new(i2c.acquire_i2c(), Delay::new(&clocks), 2, 0x20);
 
     for i in 0..4 {
         log_error!(select_lcd(&mut greenpak, i), "Failed to select LCD {}", i);
@@ -108,22 +107,22 @@ fn main() -> ! {
     }
 
     log_error!(select_lcd(&mut greenpak, 0), "Failed to select LCD 0");
-    log_error!(lcd.set_line(0, "White House Ale"), "Failed to write to LCD 0");
+    log_error!(write!(lcd, "White House Ale"), "Failed to write to LCD 0");
 
     log_error!(select_lcd(&mut greenpak, 1), "Failed to select LCD 1");
-    log_error!(lcd.set_line(0, "Milky Way"), "Failed to write to LCD 1");
+    log_error!(write!(lcd, "Milky Way"), "Failed to write to LCD 1");
 
     log_error!(select_lcd(&mut greenpak, 2), "Failed to select LCD 2");
-    log_error!(lcd.set_line(0, "Jul 2022"), "Failed to write to LCD 2");
+    log_error!(write!(lcd, "Jul 2022"), "Failed to write to LCD 2");
 
     log_error!(select_lcd(&mut greenpak, 3), "Failed to select LCD 3");
-    log_error!(lcd.set_line(0, "Reservoir Hops"), "Failed to write to LCD 3");
+    log_error!(write!(lcd, "Reservoir Hops"), "Failed to write to LCD 3");
 
     loop {
         let temp = sensor.measure().unwrap();
 
         log_error!(select_lcd(&mut greenpak, 0), "Failed to select LCD 0");
-        log_error!(lcd.set_cursor(0, 1), "Failed to set cursor on LCD 0");
+        log_error!(lcd.move_cursor(1, 0), "Failed to move cursor on LCD 0");
         log_error!(write!(lcd, "Temp: {: >5.1}°C", temp), "Failed to write to LCD 0");
 
         delay.delay_ms(1000u32);
