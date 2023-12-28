@@ -254,9 +254,11 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 name = "fridge-tap-list"
 version = "0.1.0"
 dependencies = [
+ "embedded-hal",
  "esp-backtrace",
  "esp-println 0.8.0",
  "esp32c6-hal",
+ "hex-literal",
 ]
 
 [[package]]
@@ -285,6 +287,12 @@ name = "heck"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "95505c38b4572b2d910cecb0281560f54b440a19336cbbcb27bf6ce6adc6f5a8"
+
+[[package]]
+name = "hex-literal"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6fe2267d4ed49bc07b63801559be28c718ea06c4738b7a03c94df7386d2cde46"
 
 [[package]]
 name = "ident_case"
