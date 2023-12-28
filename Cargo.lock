@@ -259,6 +259,7 @@ dependencies = [
  "esp-println 0.8.0",
  "esp32c6-hal",
  "hex-literal",
+ "shared-bus",
 ]
 
 [[package]]
@@ -487,6 +488,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.43",
+]
+
+[[package]]
+name = "shared-bus"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6b8d3f0e34309c22ca4a9a27d24fa493e31573485f3493802b75b9d706756a6"
+dependencies = [
+ "embedded-hal",
+ "nb 1.1.0",
 ]
 
 [[package]]
